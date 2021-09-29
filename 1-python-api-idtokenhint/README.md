@@ -120,6 +120,7 @@ In order to build & run the sample, you need to have the [Python](https://www.py
 
 1. After you have edited the file [config.json](config.json), start thePython app by running this in the command prompt
 ```Powershell
+pip install -r requirements.txt
 .\run.cmd
 ```
 
