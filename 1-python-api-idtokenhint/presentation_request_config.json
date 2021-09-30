@@ -19,7 +19,7 @@
         "type": "VerifiedCredentialExpert",
         "manifest": "...set at runtime...",
         "purpose": "the purpose why the verifier asks for a VC",
-        "trustedIssuers": [ "...set at runtime..." ]
+        "acceptedIssuers": [ "...set at runtime..." ]
       }
     ]
   }
