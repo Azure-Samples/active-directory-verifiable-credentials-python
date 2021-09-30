@@ -2,7 +2,8 @@
   "authority": "...set at runtime...",
   "includeQRCode": false,
   "registration": {
-    "clientName": "Verifiable Credential Expert Sample"
+    "clientName": "Verifiable Credential Expert Sample",
+    "purpose": "the purpose why the verifier asks for 1 or more VCs"
   },
   "callback": {
     "url": "...set at runtime...",
