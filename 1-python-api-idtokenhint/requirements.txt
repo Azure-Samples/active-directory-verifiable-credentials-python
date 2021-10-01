@@ -1,0 +1,13 @@
+asn1crypto>=0.24.0
+cffi>=1.11.5
+idna>=2.7
+pycparser>=2.19
+six>=1.11.0
+requests>=2.21.0
+cryptography>=3.2
+Flask>=1.0.2
+Flask_Caching>=1.10.1
+Werkzeug>=0.15.3
+gevent>=1.4.0
+configparser>=3.7.4
+msal>=1.13.0
