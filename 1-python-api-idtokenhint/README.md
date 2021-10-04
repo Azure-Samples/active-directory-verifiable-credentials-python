@@ -41,7 +41,6 @@ The project is divided in 2 parts, one for issuance and one for verifying a veri
 Before you can run this sample make sure your environment is setup correctly, follow the instructions in the documentation here [TODO LINK TO DOCS ONCE READY].
 
 ### create application registration
-[TODO - decide if bash + Azure CLI instead of powershell - or both]
 Run the [Configure.PS1](./AppCreationScripts/AppCreationScripts.md) powershell script in the AppCreationScripts directory or follow these manual steps to create an application registrations, give the application the correct permissions so it can access the Verifiable Credentials Request REST API:
 
 Register an application in Azure Active Directory: 
