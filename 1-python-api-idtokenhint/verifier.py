@@ -25,7 +25,6 @@ fP.close()
 
 presentationConfig["authority"] = config["VerifierAuthority"]
 presentationConfig["presentation"]["requestedCredentials"][0]["acceptedIssuers"][0] = config["IssuerAuthority"]
-presentationConfig["presentation"]["requestedCredentials"][0]["manifest"] = config["CredentialManifest"]
 
 @app.route("/api/verifier/presentation-request", methods = ['GET'])
 def presentationRequest():
