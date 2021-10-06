@@ -74,8 +74,7 @@ cd active-directory-verifiable-credentials-python\1-python-api-idtokenhint
 ### Create your credential
 To use the sample we need a configured Verifiable Credential in the azure portal.
 In the project directory CredentialFiles you will find the `VerifiedCredentialExpertDisplay.json` file and the `VerifiedCredentialExpertRules.json` file. Use these 2 files to create your own VerifiedCredentialExpert credential. 
-Before you upload the files, you need to modify the `VerifiedCredentialExpertRules.json` file.
-If you navigate to your [Verifiable Credentials](https://portal.azure.com/#blade/Microsoft_AAD_DecentralizedIdentity/InitialMenuBlade/issuerSettingsBlade) blade in azure portal, you can copy the Decentralized identifier (DID) string (did:ion..) and modify the value after "iss" on line 12. Save the file and follow the instructions how to create your first verifiable credential.
+If you navigate to your [Verifiable Credentials](https://portal.azure.com/#blade/Microsoft_AAD_DecentralizedIdentity/InitialMenuBlade/issuerSettingsBlade) blade in azure portal. Follow the instructions how to create your first verifiable credential.
 
 You can find the instructions on how to create a Verifiable Credential in the azure portal [here](https://aka.ms/didfordevs) 
 
@@ -87,15 +86,15 @@ You need to manually copy your Microsoft AAD Verifiable Credential service creat
 The API is called with special payloads for issuing and verifying verifiable credentials. The sample payload files are modified by the sample code by copying the correct values defined in the `config.json` file.
 If you want to modify the payloads `issuance_request_config.json` and `presentation_request_config.json` files yourself, make sure you comment out the code overwriting the values in the issuer.py and verifier.py files. The code overwrites the Authority, Manifest and trustedIssuers values. The callback URI is modified in code to match your hostname.
 
-The file [run.cmd](run.cmd) is a template for setting all environment variables and running your Java Springbot application.
-Make sure you change the values for `azTenantId`, `azClientId` and `azClientSecret` and set the to the values from th eapp registration you created above. Then, there are two other variables that references files used as templates for issuance and verification. You need to update them too. 
+The file [run.cmd](run.cmd) is a template for setting all environment variables and running your Python application.
+Make sure you change the parameter for `azTenantId`, `azClientId` and `azClientSecret` in config.json and set the to the values from the app registration you created above. Then, there are two other variables that references files used as templates for issuance and verification. You need to update them too. 
 
 ## Running the sample
 
 In order to build & run the sample, you need to have the [Python](https://www.python.org/downloads//) installed locally. 
 
 
-1. After you have edited the file [config.json](config.json), start thePython app by running this in the command prompt
+1. After you have edited the file [config.json](config.json), start the Python app by running this in the command prompt
 ```Powershell
 pip install -r requirements.txt
 .\run.cmd
@@ -184,7 +183,7 @@ Content: {
 ```
 
 ### Understanding what's going on
-As a first source of information, the Java sample will trace output into the console window of all HTTP calls it receives. Then a good tip is to use Edge/Chrome/Firefox dev tools functionality found under F12 and watch the Network tab for traffic going from the browser to the Java app.
+As a first source of information, the Python sample will trace output into the console window of all HTTP calls it receives. Then a good tip is to use Edge/Chrome/Firefox dev tools functionality found under F12 and watch the Network tab for traffic going from the browser to the Python app.
 
 ## Best practices
 When deploying applications which need client credentials and use secrets or certificates the more secure practice is to use certificates. If you are hosting your application on azure make sure you check how to deploy managed identities. This takes away the management and risks of secrets in your application.
