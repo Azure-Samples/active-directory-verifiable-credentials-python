@@ -48,8 +48,8 @@ def issuanceRequest():
     if "pin" in payload["issuance"] is not None:
         pinCode = ''.join(str(randint(0,9)) for _ in range(int(payload["issuance"]["pin"]["length"])))
         payload["issuance"]["pin"]["value"] = pinCode
-    payload["issuance"]["claims"]["displayName"] = "Forrest Gump"
-    payload["issuance"]["claims"]["sponsorName"] = "Lieutenant Dan"
+    payload["issuance"]["claims"]["given_name"] = "Megan"
+    payload["issuance"]["claims"]["family_name"] = "Bowen"
     print( json.dumps(payload) )
     post_headers = { "content-type": "application/json", "Authorization": "Bearer " + accessToken }
     client_api_request_endpoint = "https://beta.did.msidentity.com/v1.0/" + config["azTenantId"] + "/verifiablecredentials/request"
