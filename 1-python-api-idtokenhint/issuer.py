@@ -23,6 +23,9 @@ fI = open(sys.argv[2],)
 issuanceConfig = json.load(fI)
 fI.close()  
 
+apiKey = str(uuid.uuid4())
+
+issuanceConfig["callback"]["headers"]["api-key"] = apiKey
 issuanceConfig["authority"] = config["IssuerAuthority"]
 issuanceConfig["issuance"]["manifest"] = config["CredentialManifest"]
 if "pin" in issuanceConfig["issuance"] is not None:
@@ -67,6 +70,9 @@ def issuanceRequestApiCallback():
     """ This method is called by the VC Request API when the user scans a QR code and presents a Verifiable Credential to the service """
     issuanceResponse = request.json
     print(issuanceResponse)
+    if request.headers['api-key'] != apiKey:
+        print("api-key wrong or missing")
+        return Response( jsonify({'error':'api-key wrong or missing'}), status=401, mimetype='application/json')
     if issuanceResponse["code"] == "request_retrieved":
         cacheData = {
             "status": issuanceResponse["code"],

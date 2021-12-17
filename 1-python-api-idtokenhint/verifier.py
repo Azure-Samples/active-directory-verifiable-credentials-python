@@ -23,8 +23,12 @@ fP = open(sys.argv[3],)
 presentationConfig = json.load(fP)
 fP.close()  
 
+apiKey = str(uuid.uuid4())
+
+presentationConfig["callback"]["headers"]["api-key"] = apiKey
 presentationConfig["authority"] = config["VerifierAuthority"]
 presentationConfig["presentation"]["requestedCredentials"][0]["acceptedIssuers"][0] = config["IssuerAuthority"]
+print( presentationConfig )
 
 @app.route("/api/verifier/presentation-request", methods = ['GET'])
 def presentationRequest():
@@ -48,13 +52,19 @@ def presentationRequest():
     resp = r.json()
     print(resp)
     resp["id"] = id            
-    return Response( json.dumps(resp), status=200, mimetype='application/json')
+    response = Response( json.dumps(resp), status=200, mimetype='application/json')
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
 
 @app.route("/api/verifier/presentation-request-callback", methods = ['POST'])
 def presentationRequestApiCallback():
     """ This method is called by the VC Request API when the user scans a QR code and presents a Verifiable Credential to the service """
     presentationResponse = request.json
     print(presentationResponse)
+    if request.headers['api-key'] != apiKey:
+        print("api-key wrong or missing")
+        return Response( jsonify({'error':'api-key wrong or missing'}), status=401, mimetype='application/json')
     if presentationResponse["code"] == "request_retrieved":
         cacheData = {
             "status": presentationResponse["code"],
@@ -69,7 +79,8 @@ def presentationRequestApiCallback():
             "payload": presentationResponse["issuers"],
             "subject": presentationResponse["subject"],
             "firstName": presentationResponse["issuers"][0]["claims"]["firstName"],
-            "lastName": presentationResponse["issuers"][0]["claims"]["lastName"]
+            "lastName": presentationResponse["issuers"][0]["claims"]["lastName"],
+            "presentationResponse": presentationResponse
         }
         cache.set( presentationResponse["state"], json.dumps(cacheData) )
         return ""
@@ -87,6 +98,35 @@ def presentationRequestStatus():
     print(data)
     if data is not None:
         cacheData = json.loads(data)
-        return Response( json.dumps(cacheData), status=200, mimetype='application/json')
+        response = Response( json.dumps(cacheData), status=200, mimetype='application/json')
     else:
-        return ""
+        response = Response( "", status=200, mimetype='application/json')
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+@app.route("/api/verifier/presentation-response-b2c", methods = ['POST'])
+def presentationResponseB2C():
+    presentationResponse = request.json
+    id = presentationResponse["id"]
+    print(id)
+    data = cache.get(id)
+    print(data)
+    if data is not None:
+        cacheData = json.loads(data)
+        if cacheData["status"] == "presentation_verified":
+            claims = cacheData["presentationResponse"]["issuers"][0]["claims"]
+            claimsExtra = {
+               'vcType': presentationConfig["presentation"]["requestedCredentials"][0]["type"],
+               'vcIss': cacheData["presentationResponse"]["issuers"][0]["authority"],
+               'vcSub': cacheData["presentationResponse"]["subject"],
+               'vcKey': cacheData["presentationResponse"]["subject"].replace("did:ion:", "did.ion.").split(":")[0].replace("did.ion.", "did:ion:")
+            }
+            responseBody = {**claimsExtra, **claims} # merge
+            return Response( json.dumps(responseBody), status=200, mimetype='application/json')
+
+    errmsg = {
+        'version': '1.0.0', 
+        'status': 400,
+        'userMessage': 'Verifiable Credentials not presented'
+        }
+    return Response( json.dumps(errmsg), status=409, mimetype='application/json')
