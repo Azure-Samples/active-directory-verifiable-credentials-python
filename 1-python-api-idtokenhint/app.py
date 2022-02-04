@@ -12,6 +12,9 @@ import argparse
 import requests
 from random import randint
 import msal
+from cryptography.x509 import load_pem_x509_certificate
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
 
 cacheConfig = {
     "DEBUG": True,          # some Flask specific configs
@@ -32,6 +35,23 @@ msalCca = msal.ConfidentialClientApplication( config["azClientId"],
     authority="https://login.microsoftonline.com/" + config["azTenantId"],
     client_credential=config["azClientSecret"],
     )
+
+if config["azCertificateName"] != "":
+    with open(config["azCertificatePrivateKeyLocation"], "rb") as file:
+        private_key = file.read()
+    with open(config["azCertificateLocation"]) as file:
+        public_certificate = file.read()
+    cert = load_pem_x509_certificate(data=bytes(public_certificate, 'UTF-8'), backend=default_backend())
+    thumbprint = (cert.fingerprint(hashes.SHA1()).hex())
+    print("Cert based auth using thumbprint: " + thumbprint)    
+    msalCca = msal.ConfidentialClientApplication( config["azClientId"], 
+       authority="https://login.microsoftonline.com/" + config["azTenantId"],
+        client_credential={
+            "private_key": private_key,
+            "thumbprint": thumbprint,
+            "public_certificate": public_certificate
+        }
+    )    
 
 import issuer
 import verifier
