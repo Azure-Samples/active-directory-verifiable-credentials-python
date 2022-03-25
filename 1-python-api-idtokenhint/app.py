@@ -53,6 +53,19 @@ if config["azCertificateName"] != "":
         }
     )    
 
+# Check if it is an EU tenant and set up the endpoint for it
+r = requests.get("https://login.microsoftonline.com/" + config["azTenantId"] + "/v2.0/.well-known/openid-configuration")
+resp = r.json()
+print("tenant_region_scope = " + resp["tenant_region_scope"])
+config["tenant_region_scope"] = resp["tenant_region_scope"]
+config["msIdentityHostName"] = "https://beta.did.msidentity.com/v1.0/"
+if resp["tenant_region_scope"] == "EU":
+    config["msIdentityHostName"] = "https://beta.eu.did.msidentity.com/v1.0/"
+
+# Check that the Credential Manifest URL is in the same tenant Region and throw an error if it's not
+if False == config["CredentialManifest"].startswith( config["msIdentityHostName"] ):
+    raise ValueError("Error in config file. CredentialManifest URL configured for wrong tenant region. Should start with: " + config["msIdentityHostName"])
+    
 import issuer
 import verifier
 
