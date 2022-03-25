@@ -46,7 +46,7 @@ def presentationRequest():
     payload["callback"]["state"] = id
     print( json.dumps(payload) )
     post_headers = { "content-type": "application/json", "Authorization": "Bearer " + accessToken }
-    client_api_request_endpoint = "https://beta.did.msidentity.com/v1.0/" + config["azTenantId"] + "/verifiablecredentials/request"
+    client_api_request_endpoint = config["msIdentityHostName"] + config["azTenantId"] + "/verifiablecredentials/request"
     r = requests.post( client_api_request_endpoint
                     , headers=post_headers, data=json.dumps(payload))
     resp = r.json()
