@@ -27,8 +27,7 @@ apiKey = str(uuid.uuid4())
 
 presentationConfig["callback"]["headers"]["api-key"] = apiKey
 presentationConfig["authority"] = config["VerifierAuthority"]
-presentationConfig["presentation"]["requestedCredentials"][0]["acceptedIssuers"][0] = config["IssuerAuthority"]
-print( presentationConfig )
+presentationConfig["requestedCredentials"][0]["acceptedIssuers"][0] = config["IssuerAuthority"]
 
 @app.route("/api/verifier/presentation-request", methods = ['GET'])
 def presentationRequest():
@@ -42,11 +41,12 @@ def presentationRequest():
     else:
         print(result.get("error") + result.get("error_description"))
     payload = presentationConfig.copy()
-    payload["callback"]["url"] = str(request.url_root).replace("http://", "https://") + "/api/verifier/presentation-request-callback"
+    payload["callback"]["url"] = str(request.url_root).replace("http://", "https://") + "api/verifier/presentation-request-callback"
     payload["callback"]["state"] = id
     print( json.dumps(payload) )
     post_headers = { "content-type": "application/json", "Authorization": "Bearer " + accessToken }
-    client_api_request_endpoint = config["msIdentityHostName"] + config["azTenantId"] + "/verifiablecredentials/request"
+    client_api_request_endpoint = config["msIdentityHostName"] + "verifiableCredentials/createPresentationRequest"
+    print( client_api_request_endpoint )
     r = requests.post( client_api_request_endpoint
                     , headers=post_headers, data=json.dumps(payload))
     resp = r.json()
@@ -65,21 +65,21 @@ def presentationRequestApiCallback():
     if request.headers['api-key'] != apiKey:
         print("api-key wrong or missing")
         return Response( jsonify({'error':'api-key wrong or missing'}), status=401, mimetype='application/json')
-    if presentationResponse["code"] == "request_retrieved":
+    if presentationResponse["requestStatus"] == "request_retrieved":
         cacheData = {
-            "status": presentationResponse["code"],
+            "status": presentationResponse["requestStatus"],
             "message": "QR Code is scanned. Waiting for validation..."
         }
         cache.set( presentationResponse["state"], json.dumps(cacheData) )
         return ""
-    if presentationResponse["code"] == "presentation_verified":
+    if presentationResponse["requestStatus"] == "presentation_verified":
         cacheData = {
-            "status": presentationResponse["code"],
+            "status": presentationResponse["requestStatus"],
             "message": "Presentation received",
-            "payload": presentationResponse["issuers"],
+            "payload": presentationResponse["verifiedCredentialsData"],
             "subject": presentationResponse["subject"],
-            "firstName": presentationResponse["issuers"][0]["claims"]["firstName"],
-            "lastName": presentationResponse["issuers"][0]["claims"]["lastName"],
+            "firstName": presentationResponse["verifiedCredentialsData"][0]["claims"]["givenName"],
+            "lastName": presentationResponse["verifiedCredentialsData"][0]["claims"]["familyName"],
             "presentationResponse": presentationResponse
         }
         cache.set( presentationResponse["state"], json.dumps(cacheData) )
@@ -113,11 +113,11 @@ def presentationResponseB2C():
     print(data)
     if data is not None:
         cacheData = json.loads(data)
-        if cacheData["status"] == "presentation_verified":
-            claims = cacheData["presentationResponse"]["issuers"][0]["claims"]
+        if cacheData["requestStatus"] == "presentation_verified":
+            claims = cacheData["verifiedCredentialsData"][0]["claims"]
             claimsExtra = {
                'vcType': presentationConfig["presentation"]["requestedCredentials"][0]["type"],
-               'vcIss': cacheData["presentationResponse"]["issuers"][0]["authority"],
+               'vcIss': cacheData["presentationResponse"]["requestedCredentials"][0]["issuer"],
                'vcSub': cacheData["presentationResponse"]["subject"],
                'vcKey': cacheData["presentationResponse"]["subject"].replace("did:ion:", "did.ion.").split(":")[0].replace("did.ion.", "did:ion:")
             }
