@@ -27,10 +27,10 @@ apiKey = str(uuid.uuid4())
 
 issuanceConfig["callback"]["headers"]["api-key"] = apiKey
 issuanceConfig["authority"] = config["IssuerAuthority"]
-issuanceConfig["issuance"]["manifest"] = config["CredentialManifest"]
-if "pin" in issuanceConfig["issuance"] is not None:
-    if int(issuanceConfig["issuance"]["pin"]["length"]) == 0:
-        del issuanceConfig["issuance"]["pin"]
+issuanceConfig["manifest"] = config["CredentialManifest"]
+if "pin" in issuanceConfig is not None:
+    if int(issuanceConfig["pin"]["length"]) == 0:
+        del issuanceConfig["pin"]
 
 @app.route("/api/issuer/issuance-request", methods = ['GET'])
 def issuanceRequest():
@@ -45,25 +45,27 @@ def issuanceRequest():
         print(result.get("error") + result.get("error_description"))
 
     payload = issuanceConfig.copy()
-    payload["callback"]["url"] = str(request.url_root).replace("http://", "https://") + "/api/issuer/issuance-request-callback"
+    payload["callback"]["url"] = str(request.url_root).replace("http://", "https://") + "api/issuer/issuance-request-callback"
     payload["callback"]["state"] = id
     pinCode = 0
-    if "pin" in payload["issuance"] is not None:
-        pinCode = ''.join(str(randint(0,9)) for _ in range(int(payload["issuance"]["pin"]["length"])))
-        payload["issuance"]["pin"]["value"] = pinCode
-    if "claims" in payload["issuance"] is not None:
-        payload["issuance"]["claims"]["given_name"] = "Megan"
-        payload["issuance"]["claims"]["family_name"] = "Bowen"
+    if "pin" in payload is not None:
+        pinCode = ''.join(str(randint(0,9)) for _ in range(int(payload["pin"]["length"])))
+        payload["pin"]["value"] = pinCode
+    if "claims" in payload is not None:
+        payload["claims"]["given_name"] = "Megan"
+        payload["claims"]["family_name"] = "Bowen"
     print( json.dumps(payload) )
     post_headers = { "content-type": "application/json", "Authorization": "Bearer " + accessToken }
-    client_api_request_endpoint = config["msIdentityHostName"] + config["azTenantId"] + "/verifiablecredentials/request"
+    client_api_request_endpoint = config["msIdentityHostName"] + "verifiableCredentials/createIssuanceRequest"
+    print( client_api_request_endpoint )
     r = requests.post( client_api_request_endpoint
                     , headers=post_headers, data=json.dumps(payload))
     resp = r.json()
     print(resp)
     resp["id"] = id
-    if "pin" in payload["issuance"] is not None:
+    if "pin" in payload is not None:
         resp["pin"] = pinCode
+    #print(resp)
     return Response( json.dumps(resp), status=200, mimetype='application/json')
 
 @app.route("/api/issuer/issuance-request-callback", methods = ['POST'])
@@ -74,23 +76,23 @@ def issuanceRequestApiCallback():
     if request.headers['api-key'] != apiKey:
         print("api-key wrong or missing")
         return Response( jsonify({'error':'api-key wrong or missing'}), status=401, mimetype='application/json')
-    if issuanceResponse["code"] == "request_retrieved":
+    if issuanceResponse["requestStatus"] == "request_retrieved":
         cacheData = {
-            "status": issuanceResponse["code"],
+            "status": issuanceResponse["requestStatus"],
             "message": "QR Code is scanned. Waiting for issuance to complete..."
         }
         cache.set( issuanceResponse["state"], json.dumps(cacheData) )
         return ""
-    if issuanceResponse["code"] == "issuance_successful":
+    if issuanceResponse["requestStatus"] == "issuance_successful":
         cacheData = {
-            "status": issuanceResponse["code"],
+            "status": issuanceResponse["requestStatus"],
             "message": "Credential successfully issued"
         }
         cache.set( issuanceResponse["state"], json.dumps(cacheData) )
         return ""
-    if issuanceResponse["code"] == "issuance_error":
+    if issuanceResponse["requestStatus"] == "issuance_error":
         cacheData = {
-            "status": issuanceResponse["code"],
+            "status": issuanceResponse["requestStatus"],
             "message": issuanceResponse["error"]["message"]
         }
         cache.set( issuanceResponse["state"], json.dumps(cacheData) )
