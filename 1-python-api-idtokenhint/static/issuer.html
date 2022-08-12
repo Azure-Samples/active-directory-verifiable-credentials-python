@@ -79,18 +79,20 @@
                                     if (respMsg.status == 'request_retrieved') {
                                         document.getElementById('message-wrapper').style.display = "block";
                                         document.getElementById('qrText').style.display = "none";
-                                        document.getElementById('qrcode').style.display = "none";
+                                        document.getElementById("qrcode").getElementsByTagName("img")[0].style.opacity = "0.1";
                                         if (respMsg.pin) {
                                             document.getElementById('pinCodeText').style.display = "visible";
                                         }
                                         document.getElementById('message').innerHTML = respMsg.message;
                                     }
                                     if (respMsg.status == 'issuance_successful') {
+                                        document.getElementById('qrcode').style.display = "none";
                                         document.getElementById('pinCodeText').style.display = "none";
                                         document.getElementById('message').innerHTML = respMsg.message;
                                         clearInterval(checkStatus);
                                     }
                                     if (respMsg.status == 'issuance_failed') {
+                                        document.getElementById('qrcode').style.display = "none";
                                         document.getElementById('pinCodeText').style.display = "none";
                                         //document.getElementById('message').innerHTML = respMsg.message;
                                         document.getElementById('message').innerHTML = "Issuance error occured, did you enter the wrong pincode? Please refresh the page and try again.";
