@@ -157,6 +157,15 @@ r = requests.post( client_api_request_endpoint
                 , headers=post_headers, data=json.dumps(payload))
 resp = r.json()
 ```
+## Deploying the sample to Azure AppServices
+If you deploy the sample to **Azure AppServices**, as an alternative to using [ngrok](https://docs.microsoft.com/en-us/azure/active-directory/verifiable-credentials/verifiable-credentials-faq#i-can-not-use-ngrok-what-do-i-do), you need to add the following **Application settings** under the **Configuration** menu.
+
+- **PORT** = 8000
+- **CONFIGFILE** = ./config.json
+- **ISSUANCEFILE** = ./issuance_request_config.json
+- **PRESENTATIONFILE** = ./presentation_request_config.json
+
+Without these settings, the python application will not start correctly.
 
 ## Troubleshooting
 

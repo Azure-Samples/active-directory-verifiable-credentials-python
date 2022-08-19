@@ -29,7 +29,10 @@ cache = Cache(app)
 log = logging.getLogger() 
 log.setLevel(logging.INFO)
 
-config = json.load(open(sys.argv[1]))
+configFile = os.getenv('CONFIGFILE')
+if configFile is None:
+    configFile = sys.argv[1]
+config = json.load(open(configFile))
 
 msalCca = msal.ConfidentialClientApplication( config["azClientId"], 
     authority="https://login.microsoftonline.com/" + config["azTenantId"],
@@ -82,4 +85,7 @@ def echoApi():
     return Response( json.dumps(result), status=200, mimetype='application/json')
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
+    port = os.getenv('PORT')
+    if port is None:
+        port = 8080
+    app.run(host="0.0.0.0", port=port)
