@@ -21,6 +21,7 @@ cacheConfig = {
     "CACHE_TYPE": "SimpleCache",  # Flask-Caching related configs
     "CACHE_DEFAULT_TIMEOUT": 300
 }
+
 app = Flask(__name__,static_url_path='',static_folder='static',template_folder='static')
 
 app.config.from_mapping(cacheConfig)
@@ -66,8 +67,9 @@ config["msIdentityHostName"] = "https://verifiedid.did.msidentity.com/v1.0/"
 if False == config["CredentialManifest"].startswith( config["msIdentityHostName"] ):
     raise ValueError("Error in config file. CredentialManifest URL configured for wrong tenant region. Should start with: " + config["msIdentityHostName"])
     
-import issuer
-import verifier
+if __name__ == "__main__":
+    import issuer
+    import verifier
 
 @app.route('/')
 def root():
