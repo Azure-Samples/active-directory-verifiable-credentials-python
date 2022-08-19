@@ -19,7 +19,10 @@ from __main__ import log
 from __main__ import config
 from __main__ import msalCca
 
-fI = open(sys.argv[2],)
+issuanceFile = os.getenv('ISSUANCEFILE')
+if issuanceFile is None:
+    issuanceFile = sys.argv[2]
+fI = open(issuanceFile,)
 issuanceConfig = json.load(fI)
 fI.close()  
 

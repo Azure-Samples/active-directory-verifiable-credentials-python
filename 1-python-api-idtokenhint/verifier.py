@@ -19,7 +19,10 @@ from __main__ import log
 from __main__ import config
 from __main__ import msalCca
 
-fP = open(sys.argv[3],)
+presentationFile = os.getenv('PRESENTATIONFILE')
+if presentationFile is None:
+    presentationFile = sys.argv[3]
+fP = open(presentationFile,)
 presentationConfig = json.load(fP)
 fP.close()  
 
