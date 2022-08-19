@@ -164,8 +164,9 @@ If you deploy the sample to **Azure AppServices**, as an alternative to using [n
 - **CONFIGFILE** = ./config.json
 - **ISSUANCEFILE** = ./issuance_request_config.json
 - **PRESENTATIONFILE** = ./presentation_request_config.json
+- **SCM_DO_BUILD_DURING_DEPLOYMENT** = 1
 
-Without these settings, the python application will not start correctly.
+Without these settings, the python application will not start correctly. If the app doesn't start, if you view the logs in AppServices LogStream, you may see the problem. The **SCM_DO_BUILD_DURING_DEPLOYMENT** setting is to make pip install run during deployment. See [docs](https://docs.microsoft.com/en-us/azure/app-service/configure-language-python#customize-build-automation).
 
 ## Troubleshooting
 
