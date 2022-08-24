@@ -158,14 +158,21 @@ r = requests.post( client_api_request_endpoint
 resp = r.json()
 ```
 ## Deploying the sample to Azure AppServices
-If you deploy the sample to **Azure AppServices**, as an alternative to using [ngrok](https://docs.microsoft.com/en-us/azure/active-directory/verifiable-credentials/verifiable-credentials-faq#i-can-not-use-ngrok-what-do-i-do), you need to add the following **Application settings** under the **Configuration** menu.
+If you deploy the sample to Azure AppServices, as an alternative to using [ngrok](https://docs.microsoft.com/en-us/azure/active-directory/verifiable-credentials/verifiable-credentials-faq#i-can-not-use-ngrok-what-do-i-do), you need to update the files config.json, issuance_request_config.json and presentation_request_config.json with your changes before you do **Deploy To Web App** in VSCode. When you create an Azure AppService instance, you should select **Runtime stack** = `Python` and **OS** = `Linux` and select the same region that you have your Azure KeyVault deployed to. Free tier pricing can be used.
 
-- **PORT** = 8000
-- **CONFIGFILE** = ./config.json
-- **ISSUANCEFILE** = ./issuance_request_config.json
-- **PRESENTATIONFILE** = ./presentation_request_config.json
+**Configuration > General settings**
+- **Startup comand** - run.sh
+
+**Configuration > Application settings**
+
 - **SCM_DO_BUILD_DURING_DEPLOYMENT** = 1
+- **PORT** = 8000
+- **CONFIGFILE** = (Optional) ./config.json
+- **ISSUANCEFILE** = (Optional) ./issuance_request_config.json
+- **PRESENTATIONFILE** = (Optional) ./presentation_request_config.json
 
+The PORT setting is mandatory and must be 8000 for AppServices local port. The CONFIGFILE, ISSUANCEFILE and PRESENTATIONFILE settings are optional and if any of them are set, they will override what is in the [run.sh](run.sh) file. Make sure you haven't accidentally saved the run.sh file with CRLF line endings if you edit it. It needs to have the Linux LF style line ending.
+ 
 Without these settings, the python application will not start correctly. If the app doesn't start, if you view the logs in AppServices LogStream, you may see the problem. The **SCM_DO_BUILD_DURING_DEPLOYMENT** setting is to make pip install run during deployment. See [docs](https://docs.microsoft.com/en-us/azure/app-service/configure-language-python#customize-build-automation).
 
 ## Troubleshooting
