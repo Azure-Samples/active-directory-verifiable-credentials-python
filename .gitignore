@@ -132,3 +132,5 @@ dmypy.json
 config.[Dd]evelopment.json
 run.[Dd]evelopment.*
 docker-run.[Dd]evelopment.*
+*config.json*
+*.DS_Store*

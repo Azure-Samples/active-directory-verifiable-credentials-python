@@ -1,0 +1,30 @@
+{
+  "includeQRCode": true,
+  "callback": {
+    "url": "https://YOURPUBLICREACHABLEHOSTNAME/api/verifier/presentationCallback",
+    "state": "STATEWILLBESETINCODE",
+    "headers": {
+      "api-key": "OPTIONAL API-KEY for VERIFIER CALLBACK API"
+    }
+  },
+  "authority": "did:ion:EiBNJWnhhFxF1dPJBwQ7-s4ey0VVHUQf58xLpNuz4g-T-g",
+  "registration": {
+    "clientName": "CompuCom Verified Employee Credential",
+    "purpose": "So we can see that you a verifiable CompuCom employee"
+  },
+
+  "includeReceipt": false,
+  "requestedCredentials": [
+    {
+      "type": "VerifiedEmployee",
+      "purpose": "So we can see that you a verifiable CompuCom employee",
+      "acceptedIssuers": [ "did:ion: copied from your VC portal in this sample the code copies it from APPSETTINGS.JSON" ]
+    }
+  ],
+  "configuration": {
+    "validation": {
+      "allowRevoked": true,
+      "validateLinkedDomain": true
+    }
+  }
+}
