@@ -81,8 +81,8 @@ def presentationRequestApiCallback():
             "message": "Presentation received",
             "payload": presentationResponse["verifiedCredentialsData"],
             "subject": presentationResponse["subject"],
-            "firstName": presentationResponse["verifiedCredentialsData"][0]["claims"]["givenName"],
-            "lastName": presentationResponse["verifiedCredentialsData"][0]["claims"]["familyName"],
+            "firstName": presentationResponse["verifiedCredentialsData"][0]["claims"]["firstName"],
+            "lastName": presentationResponse["verifiedCredentialsData"][0]["claims"]["lastName"],
             "presentationResponse": presentationResponse
         }
         cache.set( presentationResponse["state"], json.dumps(cacheData) )
