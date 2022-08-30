@@ -76,13 +76,16 @@ def presentationRequestApiCallback():
         cache.set( presentationResponse["state"], json.dumps(cacheData) )
         return ""
     if presentationResponse["requestStatus"] == "presentation_verified":
+        print("printing presentationResponse");
+        print(presentationResponse);
         cacheData = {
+            
             "status": presentationResponse["requestStatus"],
             "message": "Presentation received",
             "payload": presentationResponse["verifiedCredentialsData"],
             "subject": presentationResponse["subject"],
-            "firstName": presentationResponse["verifiedCredentialsData"][0]["claims"]["firstName"],
-            "lastName": presentationResponse["verifiedCredentialsData"][0]["claims"]["lastName"],
+            "firstName": presentationResponse["verifiedCredentialsData"][0]["claims"]["givenName"],
+            "lastName": presentationResponse["verifiedCredentialsData"][0]["claims"]["surname"],
             "presentationResponse": presentationResponse
         }
         cache.set( presentationResponse["state"], json.dumps(cacheData) )
