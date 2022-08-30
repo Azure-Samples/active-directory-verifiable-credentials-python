@@ -12,19 +12,5 @@
     "clientName": "Verifiable Employee Sample"
   },
   "type": "VerifiedEmployee",
-  "manifest": "CREDENTIAL URL IN THIS SAMPLE WILL BE COPIED FROM APPSETTINGS.JSON",
-  "pin": {
-    "value": "123456",
-    "length": 4
-  },
-  "claims": {
-    "display_name": "Adeeb A.",
-    "given_name": "Adeeb",
-    "job_title": "Engineer",
-    "preferredLanguage": "ENG",
-    "surname": "Ahmed",
-    "mail": "deeb@outlook.com",
-    "revocationId" : "123",
-    "photo": ":)"
-  }
+  "manifest": "CREDENTIAL URL IN THIS SAMPLE WILL BE COPIED FROM APPSETTINGS.JSON"
 }

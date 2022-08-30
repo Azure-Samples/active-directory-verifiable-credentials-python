@@ -54,18 +54,18 @@ def issuanceRequest():
     if "pin" in payload is not None:
         pinCode = ''.join(str(randint(0,9)) for _ in range(int(payload["pin"]["length"])))
         payload["pin"]["value"] = pinCode
-    if payload["type"] == "VerifiedEmployee":
-        payload["claims"]["displayName"] = "Adeeb A."
-        payload["claims"]["givenName"] = "Adeeb"
-        payload["claims"]["jobTitle"] = "On-site Data tech"
-        payload["claims"]["preferredLanguage"] = "ENG"
-        payload["claims"]["surname"] = "Ahmed"
-        payload["claims"]["mail"] = "deeb@outlook.com"
-        payload["claims"]["revocationId"] = "123"
-        payload["claims"]["photo"] = ":)"
-    if payload["type"] == "VerifiedCredentialExpert":
-        payload["claims"]["given_name"] = "Megan"
-        payload["claims"]["family_name"] = "Bowen"
+    # if payload["type"] == "VerifiedEmployee":
+        # payload["claims"]["displayName"] = "Adeeb A."
+        # payload["claims"]["givenName"] = "Adeeb"
+        # payload["claims"]["jobTitle"] = "On-site Data tech"
+        # payload["claims"]["preferredLanguage"] = "ENG"
+        # payload["claims"]["surname"] = "Ahmed"
+        # payload["claims"]["mail"] = "deeb@outlook.com"
+        # payload["claims"]["revocationId"] = "123"
+        # payload["claims"]["photo"] = ":)"
+    # if payload["type"] == "VerifiedCredentialExpert":
+    #     payload["claims"]["given_name"] = "Megan"
+    #     payload["claims"]["family_name"] = "Bowen"
 
     print( json.dumps(payload) )
     post_headers = { "content-type": "application/json", "Authorization": "Bearer " + accessToken }
