@@ -5,20 +5,36 @@
 
     <head>
         <meta charset="utf-8">
-        <title>Verifiable Credential Expert Request API Sample - Issuer</title>
-        <meta name="description" content="Verifiable Credentials Expert">
-        <meta name="author" content="Microsoft">
+        <title>Verifiable Credential (Verified Employee) Request API Sample - Issuer</title>
+        <meta name="description" content="CompuCom Verified Employee">
+        <meta name="author" content="Batsquad">
         <link rel="stylesheet" href="styles.css">
-        <link rel="icon" href="favicon.png">    
+        <link rel="icon" href="favicon.png">
     </head>
-        
+
     <body>
         <div id="wrap">
             <div style="text-align: center;">
-                <img src="VerifiedCredentialExpert-icon.png" height=200px; />
-                <h1>Verifiable Credential Expert Issuance</h1>
-        
-            <button type="button" id="sign-in" class="button">GET CREDENTIAL</button>
+                <img src=CompuComLogo.png height=200px />
+                <h1>CompuCom Verified Employee Credential Issuance</h1>
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+                    incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
+                    nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                </p>
+            <div id="vc-card-container">
+                <div class="vc-card">
+                    <div class="vc-card-row">
+                        <img src=CompuComLogo.png height=50px; />
+                        <p style="font-size: 20px;">Verified Employee</p>
+                    </div>
+                    <div class="vc-card-row">
+                        <p style="text-align: start; font-size: 18px;">CompuCom</p>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" id="sign-in" style="background-color: #000099" class="button">ISSUE CREDENTIAL</button>
             <div id="qrText"  style="display:none;">
                 <p class="small-text">
                     <img src="authenticator-icon.png" alt="Authenticator icon" class="icon-small"><br>
@@ -36,12 +52,13 @@
 
             <script src="qrcode.min.js"></script>
             <script>
-                var signIn = document.getElementById('sign-in');
+                var signIn = document.getElementById('sign-in'); // get credential button
                 var signOut = document.getElementById('sign-out');
                 var display = document.getElementById('display');
                 var qrcode = new QRCode("qrcode", { width: 300, height: 300 });
                 var respIssuanceReq = null;
                 signIn.addEventListener('click', () => {
+                    document.getElementById('vc-card-container').style.display = "block";
                     fetch('/api/issuer/issuance-request')
                     .then(function(response) {
                         response.text()
@@ -89,6 +106,7 @@
                                         document.getElementById('qrcode').style.display = "none";
                                         document.getElementById('pinCodeText').style.display = "none";
                                         document.getElementById('message').innerHTML = respMsg.message;
+                                        // display credential if successful
                                         clearInterval(checkStatus);
                                     }
                                     if (respMsg.status == 'issuance_failed') {

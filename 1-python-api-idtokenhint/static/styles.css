@@ -1,14 +1,78 @@
 body {
     font-family: sans-serif;
-    background-color: #E0E0E0;
+    background-color: white;
 }
 #wrap {
     margin: 0 auto;
     width: 800px;
 }
 
+.call-to-action {
+  text-align: center
+}
+
+/* .card{
+  width: 320px;
+  height: 190px;
+    -webkit-perspective: 600px;
+    -moz-perspective: 600px;
+    perspective:600px;
+
+  }
+
+.card-front{
+  padding: 18px;
+-webkit-transform: rotateY(0);
+-moz-transform: rotateY(0);
+}
+
+.card-contents{
+  box-shadow: 1px 1px #ffffff;
+    top: 0;
+  position: absolute;
+z-index: 1000;
+  left: 0;
+  display: inline-block;
+    width: 320px;
+    height: 190px;
+    background-image: url('https://image.ibb.co/bVnMrc/g3095.png'), linear-gradient(to right bottom, #fd696b, #fa616e, #f65871, #f15075, #ec4879); /*linear-gradient(to right bottom, #fd8369, #fc7870, #f96e78, #f56581, #ee5d8a)*/
+    /* background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    border-radius: 8px;
+
+    -webkit-transition: all .5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    -moz-transition: all .5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    -ms-transition: all .5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    -o-transition: all .5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all .5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    -webkit-transform-style: preserve-3d;
+    -moz-transform-style: preserve-3d;
+} */
+
+#vc-card-container {
+  display: none;
+}
+
+.vc-card {
+  display: flex;
+  flex-direction:column;
+  height: 250;
+  justify-content: space-between;
+  border: 1px solid lightgray;
+  width: 65%;
+  border-radius: 10px;
+  margin: 40 auto;
+  padding: 15px 30px;
+}
+
+.vc-card-row {
+  display: flex;
+  justify-content: space-between;
+}
+
 .button {
-    background-color: #3B2E58;
+    background-color: #CC0000;
     border: none;
     color: white;
     padding: 15px 32px;
@@ -20,12 +84,12 @@ body {
     font-weight: bold;
   }
 
-.dark-purple-fill {
+/* .dark-purple-fill {
   background-color: #3B2E58;
 }
 .light-purple-fill {
   background-color: #8661c5;
-}
+} */
 
 .icon-small {
   width: 50px;

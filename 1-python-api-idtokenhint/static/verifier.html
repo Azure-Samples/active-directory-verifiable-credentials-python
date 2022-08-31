@@ -9,14 +9,19 @@
         <meta name="author" content="Microsoft">
         <link rel="stylesheet" href="styles.css">
         <link rel="icon" href="favicon.png">
-        
-    </head>    
+
+    </head>
     <body>
         <div id="wrap">
             <div style="text-align: center;">
-                <img src="VerifiedCredentialExpert-icon.png" height=200px; />
-                <h1>Verifiable Credential Expert Verification</h1>
-        
+                <img src="favicon.png" height=200px; />
+                <h1>CompuCom Verified Employee Credential Verification</h1>
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+                    incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
+                    nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                </p>
+
             <button type="button" id="sign-in" class="button">VERIFY CREDENTIAL</button>
             <div id="qrText"  style="display:none;">
                 <p class="small-text">
@@ -82,12 +87,12 @@
                                         document.getElementById('qrText').style.display = "none";
                                         document.getElementById('message').innerHTML = respMsg.message;
                                     }
-                                    
+
                                     if (respMsg.status == 'presentation_verified') {
                                         document.getElementById('qrcode').style.display = "none";
                                         document.getElementById('message').innerHTML = respMsg.message;
                                         document.getElementById('payload').innerHTML = "Payload: " + JSON.stringify(respMsg.payload);
-                                        document.getElementById('subject').innerHTML = respMsg.firstName +" " + respMsg.lastName +" is a Verifiable Credential Expert";
+                                        document.getElementById('subject').innerHTML = respMsg.firstName +" " + respMsg.lastName +" has been verified as an employee of CompuCom!";
                                         clearInterval(checkStatus);
                                     }
                                 }
