@@ -17,22 +17,11 @@
             <div style="text-align: center;">
                 <img src=CompuComLogo.png height=200px />
                 <h1>CompuCom Verified Employee Credential Issuance</h1>
-                <p>
+                <!-- <p>
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
                     incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
                     nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                </p>
-            <div id="vc-card-container">
-                <div class="vc-card">
-                    <div class="vc-card-row">
-                        <img src=CompuComLogo.png height=50px; />
-                        <p style="font-size: 20px;">Verified Employee</p>
-                    </div>
-                    <div class="vc-card-row">
-                        <p style="text-align: start; font-size: 18px;">CompuCom</p>
-                    </div>
-                </div>
-            </div>
+                </p> -->
 
             <button type="button" id="sign-in" style="background-color: #000099" class="button">ISSUE CREDENTIAL</button>
             <div id="qrText"  style="display:none;">
@@ -48,6 +37,18 @@
             <div id="message-wrapper" class="margin-bottom-75 margin-top-75" style="display: none">
                <i class="fas fa-user-check green icon-text-large margin-bottom-25"></i>
                <div id="message"></div>
+               <div id="vc-card-container">
+                <div class="vc-card">
+                    <div class="vc-card-row">
+                        <img src=CompuComLogo.png height=50px; />
+                        <p style="font-size: 20px;">John Doe</p>
+                    </div>
+                    <div class="vc-card-row">
+                        <p style="text-align: start; font-size: 18px; transform: translateY(90%);">CompuCom</p>
+                        <img src=headshot.jpg height=125px; />
+                    </div>
+                </div>
+            </div>
             </div>
 
             <script src="qrcode.min.js"></script>
@@ -58,7 +59,6 @@
                 var qrcode = new QRCode("qrcode", { width: 300, height: 300 });
                 var respIssuanceReq = null;
                 signIn.addEventListener('click', () => {
-                    document.getElementById('vc-card-container').style.display = "block";
                     fetch('/api/issuer/issuance-request')
                     .then(function(response) {
                         response.text()
@@ -105,7 +105,8 @@
                                     if (respMsg.status == 'issuance_successful') {
                                         document.getElementById('qrcode').style.display = "none";
                                         document.getElementById('pinCodeText').style.display = "none";
-                                        document.getElementById('message').innerHTML = respMsg.message;
+                                        document.getElementById('vc-card-container').style.display = "block";
+                                        document.getElementById('message').innerHTML = "John Doe has issued a Verified Credential from CompuCom.";
                                         // display credential if successful
                                         clearInterval(checkStatus);
                                     }

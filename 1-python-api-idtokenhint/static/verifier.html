@@ -16,11 +16,11 @@
             <div style="text-align: center;">
                 <img src="favicon.png" height=200px; />
                 <h1>CompuCom Verified Employee Credential Verification</h1>
-                <p>
+                <!-- <p>
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
                     incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
                     nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                </p>
+                </p> -->
 
             <button type="button" id="sign-in" class="button">VERIFY CREDENTIAL</button>
             <div id="qrText"  style="display:none;">
@@ -39,7 +39,18 @@
                 <br />
                <div id="subject"></div>
                 <br />
-               <div id="payload"></div>
+                <div id="vc-card-container">
+                    <div class="vc-card">
+                        <div class="vc-card-row">
+                            <img src=CompuComLogo.png height=50px; />
+                            <p style="font-size: 20px;">John Doe</p>
+                        </div>
+                        <div class="vc-card-row">
+                            <p style="text-align: start; font-size: 18px; transform: translateY(90%);">CompuCom</p>
+                            <img src=headshot.jpg height=125px; />
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <script src="qrcode.min.js"></script>
@@ -91,8 +102,9 @@
                                     if (respMsg.status == 'presentation_verified') {
                                         document.getElementById('qrcode').style.display = "none";
                                         document.getElementById('message').innerHTML = respMsg.message;
-                                        document.getElementById('payload').innerHTML = "Payload: " + JSON.stringify(respMsg.payload);
-                                        document.getElementById('subject').innerHTML = respMsg.firstName +" " + respMsg.lastName +" has been verified as an employee of CompuCom!";
+                                        // document.getElementById('payload').innerHTML = "Payload: " + JSON.stringify(respMsg.payload);
+                                        document.getElementById('vc-card-container').style.display = "block";
+                                        document.getElementById('subject').innerHTML = "John Doe has been verified as an employee of CompuCom.";
                                         clearInterval(checkStatus);
                                     }
                                 }
