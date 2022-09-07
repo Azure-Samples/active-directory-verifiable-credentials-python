@@ -36,7 +36,9 @@
 
             <div id="message-wrapper" class="margin-bottom-75 margin-top-75" style="display: none">
                <i class="fas fa-user-check green icon-text-large margin-bottom-25"></i>
+               <br />
                <div id="message"></div>
+               <br />
                <div id="vc-card-container">
                 <div class="vc-card">
                     <div class="vc-card-row">
@@ -45,11 +47,11 @@
                     </div>
                     <div class="vc-card-row">
                         <p style="text-align: start; font-size: 18px; transform: translateY(90%);">CompuCom</p>
-                        <img src=headshot.jpg height=125px; />
                     </div>
                 </div>
             </div>
             </div>
+            
 
             <script src="qrcode.min.js"></script>
             <script>
@@ -106,7 +108,7 @@
                                         document.getElementById('qrcode').style.display = "none";
                                         document.getElementById('pinCodeText').style.display = "none";
                                         document.getElementById('vc-card-container').style.display = "block";
-                                        document.getElementById('message').innerHTML = "John Doe has issued a Verified Credential from CompuCom.";
+                                        document.getElementById('message').innerHTML = "John Doe has claimed their Verified Employee Credential from CompuCom.";
                                         // display credential if successful
                                         clearInterval(checkStatus);
                                     }

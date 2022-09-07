@@ -101,7 +101,7 @@
 
                                     if (respMsg.status == 'presentation_verified') {
                                         document.getElementById('qrcode').style.display = "none";
-                                        document.getElementById('message').innerHTML = respMsg.message;
+                                        document.getElementById('message').innerHTML = "Verification request received"
                                         // document.getElementById('payload').innerHTML = "Payload: " + JSON.stringify(respMsg.payload);
                                         document.getElementById('vc-card-container').style.display = "block";
                                         document.getElementById('subject').innerHTML = "John Doe has been verified as an employee of CompuCom.";

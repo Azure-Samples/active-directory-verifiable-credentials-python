@@ -149,6 +149,6 @@ z-index: 1000;
   color: #228B22;
 }
 
-#message {
+#message, #subject {
   font-size: 1.5em;
 }
