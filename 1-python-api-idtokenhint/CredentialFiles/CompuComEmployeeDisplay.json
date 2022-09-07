@@ -1,0 +1,30 @@
+{
+  "locale": "en-US",
+  "card": {
+    "backgroundColor": "#ffffff",
+    "description": "Used to prove valid employment by CompuCom.",
+    "issuedBy": "CompuCom",
+    "textColor": "#000000",
+    "title": "CompuCom Employee",
+    "logo": {
+      "description": "CompuCom Logo",
+      "uri": "https://www.compucom.com/wp-content/uploads/2022/05/CompucomLogo22_2Lines_color.png"
+    }
+  },
+  "consent": {
+    "instructions": "Sign in with your CompuCom account to get your Credential.",
+    "title": "Do you want to claim your CompuCom Employee Credential?"
+  },
+  "claims": [
+    {
+      "claim": "vc.credentialSubject.firstName",
+      "label": "First name",
+      "type": "String"
+    },
+    {
+      "claim": "vc.credentialSubject.lastName",
+      "label": "Last name",
+      "type": "String"
+    }
+  ]
+}

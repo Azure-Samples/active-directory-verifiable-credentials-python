@@ -1,0 +1,30 @@
+{
+  "attestations": {
+    "idTokenHints": [
+      {
+        "mapping": [
+          {
+            "outputClaim": "firstName",
+            "required": false,
+            "inputClaim": "given_name",
+            "indexed": false
+          },
+          {
+            "outputClaim": "lastName",
+            "required": false,
+            "inputClaim": "family_name",
+            "indexed": false
+          }
+        ],
+        "required": false,
+        "trustedIssuers": []
+      }
+    ]
+  },
+  "validityInterval": 2592000,
+  "vc": {
+    "type": [
+      "CompuComEmployee"
+    ]
+  }
+}
