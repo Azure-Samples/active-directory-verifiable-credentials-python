@@ -9,7 +9,7 @@
             <meta name="author" content="Microsoft">
             <link rel="stylesheet" href="styles.css">
             <link rel="icon" href="favicon.png">
-    
+
         </head>
         <body>
             <div id="wrap">
@@ -21,7 +21,7 @@
                         incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
                         nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
                     </p> -->
-    
+
                 <button type="button" id="sign-in" class="button">VERIFY CREDENTIAL</button>
                 <div id="qrText"  style="display:none;">
                     <p class="small-text">
@@ -32,7 +32,7 @@
                 <a id="deeplink" style="display: none;margin-top: 10px;">Tap to open Authenticator on mobile</a>
                 <div id="qrcode" style="text-align: center"></div>
                 <div id="pinCodeText" style="display: none"></div>
-    
+
                 <div id="message-wrapper" class="margin-bottom-75 margin-top-75" style="display: none;">
                    <i class="fas fa-user-check green icon-text-large margin-bottom-25"></i>
                    <div id="message"></div>
@@ -55,7 +55,7 @@
                         </div>
                     </div>
                 </div>
-    
+
                 <script src="qrcode.min.js"></script>
                 <script>
                     var signIn = document.getElementById('sign-in');
@@ -98,10 +98,11 @@
                                         if (respMsg.status == 'request_retrieved') {
                                             document.getElementById('message-wrapper').style.display = "block";
                                             document.getElementById("qrcode").getElementsByTagName("img")[0].style.opacity = "0.1";
+                                            document.getElementById('vc-card-container').style.display = "none";
                                             document.getElementById('qrText').style.display = "none";
                                             document.getElementById('message').innerHTML = respMsg.message;
                                         }
-    
+
                                         if (respMsg.status == 'presentation_verified') {
                                             document.getElementById('qrcode').style.display = "none";
                                             document.getElementById('qrcode').style.visibility = "hidden";
@@ -117,7 +118,7 @@
                     })
                 </script>
                 </div>
-    
+
             </div>
         </body>
     </html>
