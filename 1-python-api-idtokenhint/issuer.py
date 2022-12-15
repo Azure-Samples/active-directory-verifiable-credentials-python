@@ -52,8 +52,12 @@ def issuanceRequest():
     payload["callback"]["state"] = id
     pinCode = 0
     if "pin" in payload is not None:
-        pinCode = ''.join(str(randint(0,9)) for _ in range(int(payload["pin"]["length"])))
-        payload["pin"]["value"] = pinCode
+        """ don't use pin if user is on mobile device """
+        if "Android" in request.headers['user-agent'] or "iPhone" in request.headers['user-agent']:
+          del payload["pin"]
+        else:
+          pinCode = ''.join(str(randint(0,9)) for _ in range(int(payload["pin"]["length"])))
+          payload["pin"]["value"] = pinCode
     if "claims" in payload is not None:
         payload["claims"]["given_name"] = "Megan"
         payload["claims"]["family_name"] = "Bowen"
