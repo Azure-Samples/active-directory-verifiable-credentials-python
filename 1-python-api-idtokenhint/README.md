@@ -30,7 +30,8 @@ The project is divided in 2 parts, one for issuance and one for verifying a veri
 
 | Verification | |
 |------|--------|
-| static\verifier.html | The website acting as the verifier of the verifiable credential.
+| static\verifier.html | The website acting as the verifier of the verifiable credential. |
+| static\presentation-verified.html | The webpage that displays the result of the presented VC |
 | verifier.py | This is the file which implements Flask routes which contains the API called from the webpage. It calls the REST API after getting an access token through MSAL and helps verifying the presented verifiable credential.
 | presentation_request_config.json | The sample payload send to the server to start issuing a vc.
 
@@ -161,7 +162,7 @@ resp = r.json()
 If you deploy the sample to Azure AppServices, as an alternative to using [ngrok](https://docs.microsoft.com/en-us/azure/active-directory/verifiable-credentials/verifiable-credentials-faq#i-can-not-use-ngrok-what-do-i-do), you need to update the files config.json, issuance_request_config.json and presentation_request_config.json with your changes before you do **Deploy To Web App** in VSCode. When you create an Azure AppService instance, you should select **Runtime stack** = `Python` and **OS** = `Linux` and select the same region that you have your Azure KeyVault deployed to. Free tier pricing can be used.
 
 **Configuration > General settings**
-- **Startup comand** - run.sh
+- **Startup command** - run.sh
 
 **Configuration > Application settings**
 

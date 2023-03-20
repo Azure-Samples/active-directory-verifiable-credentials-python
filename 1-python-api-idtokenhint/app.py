@@ -12,6 +12,7 @@ import argparse
 import requests
 from random import randint
 import msal
+import base64
 from cryptography.x509 import load_pem_x509_certificate
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
@@ -30,10 +31,34 @@ cache = Cache(app)
 log = logging.getLogger() 
 log.setLevel(logging.INFO)
 
+def base64JwtTokenToJson(base64String):
+    token = base64String.split(".")[1]
+    token = token + "===="[len(token)%4:4]
+    return json.loads(base64.urlsafe_b64decode(token.encode('utf-8')).decode('utf-8'))
+
 configFile = os.getenv('CONFIGFILE')
 if configFile is None:
     configFile = sys.argv[1]
 config = json.load(open(configFile))
+
+config["apiKey"] = str(uuid.uuid4())
+
+# Check that the manifestURL have the matching tenantId with the config file
+manifestTenantId = config["CredentialManifest"].split("/")[5]
+if config["azTenantId"] != manifestTenantId:
+    raise ValueError("TenantId in ManifestURL " + manifestTenantId + " does not match tenantId in config file " + config["azTenantId"])
+
+# Check that the issuer in the config file match the manifest
+r = requests.get(config["CredentialManifest"])
+resp = r.json()
+manifest = base64JwtTokenToJson( resp["token"] )
+config["manifest"] = manifest
+if config["IssuerAuthority"] == "":
+    config["IssuerAuthority"] = manifest["iss"]
+if config["VerifierAuthority"] == "":
+    config["VerifierAuthority"] = manifest["iss"]
+if config["IssuerAuthority"] != manifest["iss"]:
+    raise ValueError("Wrong IssuerAuthority in config file " + config["IssuerAuthority"] + ". Issuer in manifest is " + manifest["iss"])
 
 msalCca = msal.ConfidentialClientApplication( config["azClientId"], 
     authority="https://login.microsoftonline.com/" + config["azTenantId"],
@@ -67,6 +92,17 @@ config["msIdentityHostName"] = "https://verifiedid.did.msidentity.com/v1.0/"
 if False == config["CredentialManifest"].startswith( config["msIdentityHostName"] ):
     raise ValueError("Error in config file. CredentialManifest URL configured for wrong tenant region. Should start with: " + config["msIdentityHostName"])
     
+#  check that we a) can acquire an access_token and b) that it has the needed permission for this sample    
+result = msalCca.acquire_token_for_client( scopes="3db474b9-6a0c-4840-96ac-1fceb342124f/.default" )
+if "access_token" in result:
+    print( result['access_token'] )
+    token = base64JwtTokenToJson( result["access_token"] )
+    print( token["roles"])
+    if "VerifiableCredential.Create.All" not in token["roles"]:
+        raise ValueError("Access token do not have the required scope 'VerifiableCredential.Create.All'.")  
+else:
+    raise ValueError(result.get("error") + result.get("error_description"))
+    
 if __name__ == "__main__":
     import issuer
     import verifier
@@ -82,7 +118,12 @@ def echoApi():
         'api': request.url,
         'Host': request.headers.get('host'),
         'x-forwarded-for': request.headers.get('x-forwarded-for'),
-        'x-original-host': request.headers.get('x-original-host')
+        'x-original-host': request.headers.get('x-original-host'),
+        'IssuerAuthority': config["IssuerAuthority"],
+        'VerifierAuthority': config["VerifierAuthority"],
+        'manifestURL': config["CredentialManifest"],
+        'clientId': config["azClientId"],
+        'configFile': configFile
     }
     return Response( json.dumps(result), status=200, mimetype='application/json')
 
