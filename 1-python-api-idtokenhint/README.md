@@ -11,7 +11,7 @@ urlFragment: "active-directory-verifiable-credentials-python"
 ---
 # Verifiable Credentials Code Sample
 
-This code sample demonstrates how to use Microsoft's Azure Active Directory Verifiable Credentials preview to issue and consume verifiable credentials. 
+This code sample demonstrates how to use Microsoft Entra Verified ID to issue and consume verifiable credentials. 
 
 ## About this sample
 
