@@ -5,7 +5,7 @@ This repo contains a set of Microsoft Entra Verified ID samples (former Azure AD
 ## Samples
 | Sample | Description |
 |------|--------|
-| 1-python-api-idtokenhint | Python sample for using the VC Request API to issue and verify verifiable credentials with a credential contract which allows the VC Request API to pass in a payload for the Verifiable Credentials|
+| 1-python-api-idtokenhint | Python sample for using the VC Request Service API to issue and verify verifiable credentials with a credential contract which allows the VC Request API to pass in a payload for the Verifiable Credentials|
 
 
 
