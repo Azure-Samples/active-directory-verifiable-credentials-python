@@ -20,18 +20,42 @@ from __main__ import config
 from __main__ import msalCca
 from __main__ import base64JwtTokenToJson
 
-presentationFile = os.getenv('PRESENTATIONFILE')
-if presentationFile is None:
-    presentationFile = sys.argv[3]
-print(presentationFile)    
-fP = open(presentationFile,)
-presentationConfig = json.load(fP)
-fP.close()  
+presentationConfig = {
+  "authority": "...set in code...",
+  "includeQRCode": False,
+  "callback": {
+    "url": "...set in code...",
+    "state": "...set in code...",
+    "headers": {
+      "api-key": "...set in code..."
+    }
+  },
+  "registration": {
+    "clientName": config["clientName"],
+    "purpose": config["purpose"]
+  },
+  "includeReceipt": True,
+  "requestedCredentials": [
+    {
+      "type": config["CredentialType"],
+      "acceptedIssuers": [ config["acceptedIssuers"] ],
+      "configuration": {
+        "validation": {
+          "allowRevoked": True,
+          "validateLinkedDomain": True
+        }
+      }    
+    }
+  ]
+}
 
+idx = sys.argv.index('-p') if '-p' in sys.argv else -1
+if idx >= 0:
+    print("Loading presentationRequest from file: " + sys.argv[idx+1])
+    presentationConfig = json.load(open(sys.argv[idx+1]))
+
+presentationConfig["authority"] = config["DidAuthority"]
 presentationConfig["callback"]["headers"]["api-key"] = config["apiKey"]
-presentationConfig["authority"] = config["VerifierAuthority"]
-presentationConfig["requestedCredentials"][0]["acceptedIssuers"][0] = config["IssuerAuthority"]
-presentationConfig["registration"]["clientName"] = "Python Verified ID sample"
 
 @app.route("/api/verifier/presentation-request", methods = ['GET'])
 def presentationRequest():
@@ -49,7 +73,7 @@ def presentationRequest():
     else:
         print(result.get("error") + result.get("error_description"))
     payload = presentationConfig.copy()
-    payload["callback"]["url"] = str(request.url_root).replace("http://", "https://") + "api/verifier/presentation-request-callback"
+    payload["callback"]["url"] = str(request.url_root).replace("http://", "https://") + "api/request-callback"
     payload["callback"]["state"] = id
     print( json.dumps(payload) )
     post_headers = { "content-type": "application/json", "Authorization": "Bearer " + accessToken }
@@ -64,100 +88,32 @@ def presentationRequest():
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
-
-@app.route("/api/verifier/presentation-request-callback", methods = ['POST'])
-def presentationRequestApiCallback():
-    """ This method is called by the VC Request API when the user scans a QR code and presents a Verifiable Credential to the service """
-    presentationResponse = request.json
-    print(presentationResponse)
-    if request.headers['api-key'] != config["apiKey"]:
-        print("api-key wrong or missing")
-        return Response( jsonify({'error':'api-key wrong or missing'}), status=401, mimetype='application/json')
-    if presentationResponse["requestStatus"] == "request_retrieved":
-        print( "request retrieved")
-        cacheData = {
-            "status": presentationResponse["requestStatus"],
-            "message": "QR Code is scanned. Waiting for validation..."
-        }
-    elif presentationResponse["requestStatus"] == "presentation_verified":
-        print( "request verified")
-        cacheData = {
-            "status": presentationResponse["requestStatus"],
-            "message": "Presentation received",
-            "payload": presentationResponse["verifiedCredentialsData"],
-            "subject": presentationResponse["subject"],
-            "presentationResponse": presentationResponse
-        }
-        if presentationResponse["receipt"] is not None:
-          vp_token = base64JwtTokenToJson(presentationResponse["receipt"]["vp_token"])
-          vc = base64JwtTokenToJson(vp_token["vp"]["verifiableCredential"][0])
-          cacheData["jti"] = vc["jti"]  
-          cacheData["iat"] = vc["iat"]
-          cacheData["exp"] = vc["exp"]  
-    else:
-        print("400 - Unsupported requestStatus: {0}".format(presentationResponse["requestStatus"]) )
-        return Response( jsonify({'error':'Unsupported requestStatus: {0}'.format(presentationResponse["requestStatus"])}), status=400, mimetype='application/json')
-
-    data = cache.get(presentationResponse["state"])
-    if data is None:
-        print("400 - Unknown state: {0}".format(presentationResponse["state"]) )
-        return Response( jsonify({'error':'Unknown state: {0}'.format(presentationResponse["state"])}), status=400, mimetype='application/json')
-    print("200 - state: {0}".format(cacheData) )
-    cache.set( presentationResponse["state"], json.dumps(cacheData) )
-    return ""
-
-@app.route("/api/verifier/presentation-response", methods = ['GET'])
-def presentationRequestStatus():
-    """ this function is called from the UI polling for a response from the AAD VC Service.
-     when a callback is recieved at the presentationCallback service the session will be updated
-     this method will respond with the status so the UI can reflect if the QR code was scanned and with the result of the presentation
-     """
-    id = request.args.get('id')
-    print(id)
-    data = cache.get(id)
-    print(data)
-    if data is not None:
-        cacheData = json.loads(data)
-        response = Response( json.dumps(cacheData), status=200, mimetype='application/json')
-    else:
-        response = Response( "", status=200, mimetype='application/json')
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    return response
-
-@app.route("/api/verifier/presentation-response-b2c", methods = ['POST'])
-def presentationResponseB2C():
-    presentationResponse = request.json
-    id = presentationResponse["id"]
-    print(id)
-    data = cache.get(id)
-    print(data)
-    if data is not None:
-        cacheData = json.loads(data)
-        if cacheData["requestStatus"] == "presentation_verified":
-            claims = cacheData["verifiedCredentialsData"][0]["claims"]
-            claimsExtra = {
-               'vcType': presentationConfig["presentation"]["requestedCredentials"][0]["type"],
-               'vcIss': cacheData["presentationResponse"]["requestedCredentials"][0]["issuer"],
-               'vcSub': cacheData["presentationResponse"]["subject"],
-               'vcKey': cacheData["presentationResponse"]["subject"].replace("did:ion:", "did.ion.").split(":")[0].replace("did.ion.", "did:ion:")
-            }
-            responseBody = {**claimsExtra, **claims} # merge
-            return Response( json.dumps(responseBody), status=200, mimetype='application/json')
-
-    errmsg = {
-        'version': '1.0.0', 
-        'status': 400,
-        'userMessage': 'Verifiable Credentials not presented'
-        }
-    return Response( json.dumps(errmsg), status=409, mimetype='application/json')
-
 @app.route("/api/verifier/get-presentation-details", methods = ['GET'])
 def getPresentationDetails():
     respData = {
     'clientName': presentationConfig["registration"]["clientName"],
     'purpose': presentationConfig["registration"]["purpose"],
-    'VerifierAuthority': config["VerifierAuthority"],
+    'DidAuthority': config["DidAuthority"],
     'type': presentationConfig["requestedCredentials"][0]["type"],
     'acceptedIssuers': presentationConfig["requestedCredentials"][0]["acceptedIssuers"]
     }
     return Response( json.dumps(respData), status=200, mimetype='application/json')
+
+@app.route("/api/verifier/load-template", methods = ['POST'])
+def loadTemplate():
+    """ 
+    UI passes a template for presentation request so we can request other credentials
+    """
+    body = request.data.decode()
+    buf = ""
+    for line in body.splitlines():
+      if line.lstrip().startswith("//") == False:
+        buf = buf + line
+    template = json.loads(buf)
+    print(template)
+    global presentationConfig
+    presentationConfig = template
+    presentationConfig["authority"] = config["DidAuthority"]
+    presentationConfig["callback"]["headers"]["api-key"] = config["apiKey"]
+    response = Response( json.dumps({'status': 'template loaded'}), status=200, mimetype='application/json')
+    return response

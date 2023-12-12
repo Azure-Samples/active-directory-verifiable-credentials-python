@@ -7,63 +7,83 @@ products:
 - Entra
 - Verified ID
 description: "A code sample demonstrating issuance and verification of verifiable credentials."
-urlFragment: "active-directory-verifiable-credentials-python"
+urlFragment: "active-directory-verifiable-credentials-pytnon"
 ---
-# Verifiable Credentials Code Sample
+# Verified ID idTokenHint Sample for Python
 
-This code sample demonstrates how to use Microsoft Entra Verified ID to issue and consume verifiable credentials. 
+This code sample demonstrates how to use Microsoft Entra Verified ID to issue and consume verifiable credentials.
 
 ## About this sample
 
-Welcome to Microsoft Entra Verified ID (former Azure Active Directory Verifiable Credentials). In this sample, we'll teach you to issue your first verifiable credential: a Verified Credential Expert Card. You'll then use this card to prove to a verifier that you are a Verified Credential Expert, mastered in the art of digital credentialing. The sample uses the preview REST API which supports ID Token hints to pass a payload for the verifiable credential.
+Welcome to Microsoft Entra Verified ID. In this sample, we'll teach you to issue your first verifiable credential: a Verified Credential Expert Card. You'll then use this card to prove to a verifier that you are a Verified Credential Expert, mastered in the art of digital credentialing. The sample uses the preview REST API which supports ID Token hints to pass a payload for the verifiable credential.
+
+## Deploy to Azure
+
+Complete the [setup](#Setup) before deploying to Azure so that you have all the required parameters.
+
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure-Samples%2Factive-directory-verifiable-credentials-node%2Fmain%2F1-python-api-idtokenhint%2FARMTemplate%2Ftemplate.json)
+
+You will be asked to enter some parameters during deployment about your app registration and your Verified ID details. You will find these values in the admin portal.
+
+![Deployment Parameters](ReadmeFiles/DeployToAzure.png)
+
+The `photo` claim is for presentation to name the claim in the requested credential when asking for a `FaceCheck`. 
+For issuance, the sample will use the credential manifest to determind if the credential has a photo or not. 
+If you have a claim with a [type](https://learn.microsoft.com/en-us/entra/verified-id/rules-and-display-definitions-model#displayclaims-type) of `image/jpg;base64ur`, then the sample will add the selfie or uploaded photo to that claim during issuance. 
+
+## Test Issuance and Verification
+
+Once you have deployed this sample to Azure AppServices with a working configuration, you can issue yourself a `VerifiedCredentialExpert` credential and then test verification. 
+This requires completing the [Verified ID onboarding and creation](https://learn.microsoft.com/en-us/entra/verified-id/verifiable-credentials-configure-issuer) of the `VerifiedCredentialExpert`.
+If you want to test presenting and verifying other types and credentials, follow the next section.
+
+## Test Verification via templates
+
+The sample creates a [presentation request](https://learn.microsoft.com/en-us/entra/verified-id/get-started-request-api?tabs=http%2Cconstraints#presentation-request-example) in code based on your configuration in `setenv.cmd`. 
+You can also use JSON templates to create other presentation requests without changing the configuration to quickly test different scenarios. 
+This github repo provises four templates for your convenience. Right-click and copy the below links, remove `http://localhost` from the link and append it to your deployed webapp so you have a URL that looks like `.../verifier.html?template=https://...`. 
+You can issue yourself a `VerifiedEmployee` credential at [MyAccount](https://myaccound.microsoft.com) if your organization have onboarded to Verified ID and enabled MyAccount (doc [here](https://learn.microsoft.com/en-us/entra/verified-id/verifiable-credentials-configure-tenant-quick#myaccount-available-now-to-simplify-issuance-of-workplace-credentials)).
+
+| Template | Description | Link |
+|------|--------|--------|
+| TrueIdentity | A presentation request for a [TrueIdentity](https://trueidentityinc.azurewebsites.net/) credential | [Link](http://localhost/verifier.html?template=https://raw.githubusercontent.com/Azure-Samples/active-directory-verifiable-credentials-dotnet/main/1-asp-net-core-api-idtokenhint/Templates/presentation_request_TrueIdentity.json) |
+| VerifiedEmployee | A presentation request for a [VerifiedEmployee](https://learn.microsoft.com/en-us/entra/verified-id/how-to-use-quickstart-verifiedemployee) credential | [Link](http://localhost/verifier.html?template=https://raw.githubusercontent.com/Azure-Samples/active-directory-verifiable-credentials-dotnet/main/1-asp-net-core-api-idtokenhint/Templates/presentation_request_VerifiedEmployee.json) |
+| VerifiedEmployee with FaceCheck*| A presentation request for a VerifiedEmployee credential that will perform a liveness check in the Authenticator. This requires that you have a good photo of yourself in the VerifiedEmployee credential | [Link](http://localhost/verifier.html?template=https://raw.githubusercontent.com/Azure-Samples/active-directory-verifiable-credentials-dotnet/main/1-asp-net-core-api-idtokenhint/Templates/presentation_request_VerifiedEmployee-FaceCheck.json) |
+| VerifiedEmployee with constraints | A presentation request for a VerifiedEmployee credential that uses a claims constraints that `jobTitle` contains the word `manager` | [Link](http://localhost/verifier.html?template=https://raw.githubusercontent.com/Azure-Samples/active-directory-verifiable-credentials-dotnet/main/1-asp-net-core-api-idtokenhint/Templates/presentation_request_VerifiedEmployee-Constraints.json) |
+
+*Note - FaceCheck is in preview. If you plan to test it, make sure you have the latest Microsoft Authenticator.
 
 ## Contents
 
-The project is divided in 2 parts, one for issuance and one for verifying a verifiable credential. Depending on the scenario you need you can remove 1 part. To verify if your environment is completely working you can use both parts to issue a verifiedcredentialexpert VC and verify that as well.
-
+The project is divided in 2 parts, one for issuance and one for verifying a verifiable credential. Depending on the scenario you need you can remove 1 part. To verify if your environment is completely working you can use both parts to issue a `VerifiedCredentialExpert` credential and verify that as well.
 
 | Issuance | |
 |------|--------|
-| static\issuer.html|The basic webpage containing the javascript to call the APIs for issuance. |
-| issuer.py | This is the file which implements Flask routes which contains the API called from the webpage. It calls the REST API after getting an access token through MSAL. |
-| issuance_request_config.json | The sample payload send to the server to start issuing a VC. |
+| public/issuer.html|The basic webpage containing the javascript to call the APIs for issuance. Depending if you use a photo, you will see options to take a selfie or upload a stock photo of you to be issued with the credential. |
+| issuer.py | This is the file which contains the API called from the webpage. It calls the REST API after getting an access token through MSAL. |
 
 | Verification | |
 |------|--------|
-| static\verifier.html | The website acting as the verifier of the verifiable credential. |
-| static\presentation-verified.html | The webpage that displays the result of the presented VC |
-| verifier.py | This is the file which implements Flask routes which contains the API called from the webpage. It calls the REST API after getting an access token through MSAL and helps verifying the presented verifiable credential.
-| presentation_request_config.json | The sample payload send to the server to start issuing a vc.
+| public/verifier.html | The website acting as the verifier of the verifiable credential. Depending if you use a photo, you will have a checkbox that let's you create a presentation request with FaceCheck. |
+| verifier.py | This is the file which contains the API called from the webpage. It calls the REST API after getting an access token through MSAL and helps verifying the presented verifiable credential.
+
+| Common | |
+|------|--------|
+| public/index.html|Start page with option to continue with issuance or verification. |
+| public/presentation-verified.html | The webpage that displays the result of the presented VC |
+| public/verifiedid.requestservice.client.js|js lib that handles all the API calls to the app |
+| public/verifiedid.uihandler.js |js lib that handles common UI updates |
+| callback.py | This file handles common functions between issuance and verification. It handles callback event from Request Service API, the polling requests from the browser and generating the selfie request. |
 
 ## Setup
 
-Before you can run this sample make sure your environment is setup correctly, follow the instructions in the documentation [here](https://aka.ms/vcsample)
+Before you can use Verified ID you need to onboard to it. You can either onboard using the [quick setup](https://learn.microsoft.com/en-us/entra/verified-id/verifiable-credentials-configure-tenant-quick) method or the [manual setup](https://learn.microsoft.com/en-us/entra/verified-id/verifiable-credentials-configure-tenant) method. In the manual method, you use your own Azure Key Vault to store your signing key.
 
-### create application registration
-Run the [Configure.PS1](./AppCreationScripts/AppCreationScripts.md) powershell script in the AppCreationScripts directory or follow these manual steps to create an application registrations, give the application the correct permissions so it can access the Verifiable Credentials Request REST API:
-
-Register an application in Azure Active Directory: 
-1. Sign in to the Azure portal using either a work or school account or a personal Microsoft account.
-2. Navigate to the Microsoft identity platform for developers App registrations page.
-3.	Select New registration
-    -  In the Name section, enter a meaningful application name for your issuance and/or verification application
-    - In the supported account types section, select Accounts in this organizational directory only ({tenant name})
-    - Select Register to create the application
-4.	On the app overview page, find the Application (client) ID value and Directory (tenant) ID and record it for later.
-5.	From the Certificates & secrets page, in the Client secrets section, choose New client secret:
-    - Type a key description (for instance app secret)
-    - Select a key duration.
-    - When you press the Add button, the key value will be displayed, copy and save the value in a safe location.
-    - You’ll need this key later to configure the sample application. This key value will not be displayed again, nor retrievable by any other means, so record it as soon as it is visible from the Azure portal.
-6.	In the list of pages for the app, select API permissions
-    - Click the Add a permission button
-    - Search for APIs in my organization for 3db474b9-6a0c-4840-96ac-1fceb342124f or Verifiable Credential and click the “Verifiable Credentials Service Request”
-    - Click the “Application Permission” and expand “VerifiableCredential.Create.All”
-    - Click Grant admin consent for {tenant name} on top of the API/Permission list and click YES. This allows the application to get the correct permissions
-![Admin concent](ReadmeFiles/AdminConcent.PNG)
+### Create application registration
+Follow the documentation for how to do [app registeration](https://learn.microsoft.com/en-us/entra/verified-id/verifiable-credentials-configure-issuer#configure-the-verifiable-credentials-app) for an app with permission to Verified ID.
 
 ## Setting up and running the sample
-To run the sample, clone the repository, compile & run it. It's callback endpoint must be publically reachable, and for that reason, use `ngrok` as a reverse proxy to reach your app.
+To run the sample, clone the repository, compile & run it. It's callback endpoint must be publically reachable, and for that reason, use a tool like `ngrok` as a reverse proxy to reach your app.
 
 ```Powershell
 git clone https://github.com/Azure-Samples/active-directory-verifiable-credentials-python.git
@@ -72,109 +92,83 @@ cd active-directory-verifiable-credentials-python\1-python-api-idtokenhint
 
 ### Create your credential
 To use the sample we need a configured Verifiable Credential in the azure portal.
-In the project directory CredentialFiles you will find the `VerifiedCredentialExpertDisplay.json` file and the `VerifiedCredentialExpertRules.json` file. Use these 2 files to create your own VerifiedCredentialExpert credential. 
-If you navigate to your [Verifiable Credentials](https://portal.azure.com/#blade/Microsoft_AAD_DecentralizedIdentity/InitialMenuBlade/issuerSettingsBlade) blade in azure portal. Follow the instructions how to create your first verifiable credential.
+In the project directory CredentialFiles you will find the `VerifiedCredentialExpertDisplay.json` file and the `VerifiedCredentialExpertRules.json` file. Use these 2 files to create your own VerifiedCredentialExpert credential.
 
-You can find the instructions on how to create a Verifiable Credential in the azure portal [here](https://aka.ms/didfordevs) 
+If you navigate to your [Verifiable Credentials](https://portal.azure.com/#blade/Microsoft_AAD_DecentralizedIdentity/InitialMenuBlade/issuerSettingsBlade) blade in azure portal, follow the instructions how to create your first verifiable credential.
 
-Make sure you copy the value of the credential URL after you created the credential in the portal. 
-Copy the URL in the `CredentialManifest` part of the `config.json`. 
-You need to manually copy your Microsoft AAD Verifiable Credential service created Decentralized Identifier (did:ion..) value from this page as well and paste that in the config.json file for `IssuerAuthority` and `VerifierAuthority`.
+You can find the instructions on how to create a Verifiable Credential in the azure portal [here](https://aka.ms/didfordev)
+
+### Setting app's configuration
+The sample uses environment variables for app configuration. The files [setenv.cmd](setenv.cmd) and [setenv.sh](setenv.sh) contains a template for setting the required environment variables before you run the app. You need to update the files with the appropriate values.
+
+```Dos
+@echo off
+set azTenantId=<tenantId>
+set azClientId=<appId>
+set azClientSecret=<secret>
+set DidAuthority=did:web:...your-domain....com
+set clientName=Python Verified ID sample
+set purpose=To prove you are an Verified ID expert
+set CredentialManifest=https://verifiedid.did.msidentity.com/v1.0/tenants/...etc...
+set CredentialType=VerifiedCredentialExpert
+set acceptedIssuers=%DidAuthority%
+set issuancePinCodeLength=4
+set sourcePhotoClaimName=
+set matchConfidenceThreshold=70
+```
+
+| Env var | Source | Description |
+|------|--------|--------|
+| azTenantId | Directory (tenant) id in AppReg blade | Identifies your Entra ID tenant |
+| azClientId | Application (client) id in AppReg blade | Identifies your app |
+| azClientSecret | Certificates & secrets in AppReg blade | app's client secret |
+| DidAuthority | Verified ID blade | Identifies your Verified ID authority |
+| clientName | file | Descriptive name that displays in the Authenticator |
+| purpose | file | Descriptive purpose that displays in the Authenticator |
+| CredentialManifest | verified ID blade | URL to manifest for credential. Used during issuance. |
+| CredentialType | Verified ID blade | type name of credential. Used during presentation to ask for type of VC |
+| acceptedIssuers | file | ;-separated list of DIDs of issuers you accept in your presentation request |
+| issuancePinCodeLength | file | Value 0-6, where 0 means no pin code |
+| sourcePhotoClaimName | file | Name of the photo claim if the presentation request is using FaceCheck  |
+| matchConfidenceThreshold | file | Confidence score threshold for FaceCheck. Dault is 70. |
 
 ### API Payloads
-The API is called with special payloads for issuing and verifying verifiable credentials. The sample payload files are modified by the sample code by copying the correct values defined in the `config.json` file.
-If you want to modify the payloads `issuance_request_config.json` and `presentation_request_config.json` files yourself, make sure you comment out the code overwriting the values in the issuer.py and verifier.py files. The code overwrites the Authority, Manifest and trustedIssuers values. The callback URI is modified in code to match your hostname.
-
-The file [run.cmd](run.cmd) is a template for setting all environment variables and running your Python application.
-Make sure you change the parameter for `azTenantId`, `azClientId` and `azClientSecret` in config.json and set the to the values from the app registration you created above. Then, there are two other variables that references files used as templates for issuance and verification. You need to update them too. 
+The sample app doesn't require that you specify JSON payloads in files anymore as it generates the required JSON internally. If you still prefer to use the JSON payloads, you can pass them on the command line and the config values will merge with whatever values are set in environment variables. 
 
 ## Running the sample
 
-In order to build & run the sample, you need to have the [Python](https://www.python.org/downloads//) installed locally. 
+In order to build & run the sample, you need to have the [python](https://www.python.org/downloads/) installed locally.
 
+1. After you have edited either of the files [setenv.cmd](setenv.cmd) or [setenv.sh](setenv.sh), depending on your OS, start the python app by running this in the command prompt
 
-1. After you have edited the file [config.json](config.json), start the Python app by running this in the command prompt
 ```Powershell
 pip install -r requirements.txt
-.\run.cmd
+.\setenv.cmd
+python app.py
 ```
 
 1. Using a different command prompt, run ngrok to set up a URL on 8080. You can install ngrok globally from this [link](https://ngrok.com/download).
 ```Powershell
 ngrok http 8080
 ```
+
 1. Open the HTTPS URL generated by ngrok.
 ![API Overview](ReadmeFiles/ngrok-url-screen.png)
-The sample dynamically copies the hostname to be part of the callback URL, this way the VC Request service can reach your sample web application to execute the callback method.
+The sample dynamically copies the hostname to be part of the callback URL, this way Verified ID's Request Service can reach your sample web application to execute the callback method.
 
-1. Select GET CREDENTIAL
+1. Select Issue Credential
 
 1. In Authenticator, scan the QR code. 
 > If this is the first time you are using Verifiable Credentials the Credentials page with the Scan QR button is hidden. You can use the `add account` button. Select `other` and scan the QR code, this will enable the preview of Verifiable Credentials in Authenticator.
-6. If you see the 'This app or website may be risky screen', select **Advanced**.
-1. On the next **This app or website may be risky** screen, select **Proceed anyways (unsafe)**.
-1. On the Add a credential screen, notice that:
-
-  - At the top of the screen, you can see a red **Not verified** message.
-  - The credential is based on the information you uploaded as the display file.
-
-9. Select **Add**.
+1. Select **Add**.
 
 ## Verify the verifiable credential by using the sample app
-1. Navigate back and click on the Verify Credential link
+1. Navigate back and click on the Verify Credential button
 2. Click Verify Credential button
 3. Scan the QR code
-4. select the VerifiedCredentialExpert credential and click allow
+4. select the VerifiedCredentialExpert credential and click share
 5. You should see the result presented on the screen.
 
-## About the code
-Since the API is now a multi-tenant API it needs to receive an access token when it's called. 
-The endpoint of the API is https://beta.did.msidentity.com/v1.0/{YOURTENANTID}/verifiablecredentials/request 
-
-To get an access token we are using MSAL as library. MSAL supports the creation and caching of access token which are used when calling Azure Active Directory protected resources like the verifiable credential request API.
-Typicall calling the libary looks something like this:
-```Python
-msalCca = msal.ConfidentialClientApplication( config["azClientId"], 
-    authority="https://login.microsoftonline.com/" + config["azTenantId"],
-    client_credential=config["azClientSecret"],
-    )
-```
-And creating an access token:
-```Python
-result = msalCca.acquire_token_for_client( scopes="3db474b9-6a0c-4840-96ac-1fceb342124f/.default" )
-if "access_token" in result:
-    print( result['access_token'] )
-    accessToken = result['access_token']
-else:
-    print(result.get("error") + result.get("error_description"))
-```
-> **Important**: At this moment the scope needs to be: **3db474b9-6a0c-4840-96ac-1fceb342124f/.default** This might change in the future
-
-Calling the API looks like this:
-```Python
-post_headers = { "content-type": "application/json", "Authorization": "Bearer " + accessToken }
-client_api_request_endpoint = "https://beta.did.msidentity.com/v1.0/" + config["azTenantId"] + "/verifiablecredentials/request"
-r = requests.post( client_api_request_endpoint
-                , headers=post_headers, data=json.dumps(payload))
-resp = r.json()
-```
-## Deploying the sample to Azure AppServices
-If you deploy the sample to Azure AppServices, as an alternative to using [ngrok](https://docs.microsoft.com/en-us/azure/active-directory/verifiable-credentials/verifiable-credentials-faq#i-can-not-use-ngrok-what-do-i-do), you need to update the files config.json, issuance_request_config.json and presentation_request_config.json with your changes before you do **Deploy To Web App** in VSCode. When you create an Azure AppService instance, you should select **Runtime stack** = `Python` and **OS** = `Linux` and select the same region that you have your Azure KeyVault deployed to. Free tier pricing can be used.
-
-**Configuration > General settings**
-- **Startup command** - run.sh
-
-**Configuration > Application settings**
-
-- **SCM_DO_BUILD_DURING_DEPLOYMENT** = 1
-- **PORT** = 8000
-- **CONFIGFILE** = (Optional) ./config.json
-- **ISSUANCEFILE** = (Optional) ./issuance_request_config.json
-- **PRESENTATIONFILE** = (Optional) ./presentation_request_config.json
-
-The PORT setting is mandatory and must be 8000 for AppServices local port. The CONFIGFILE, ISSUANCEFILE and PRESENTATIONFILE settings are optional and if any of them are set, they will override what is in the [run.sh](run.sh) file. Make sure you haven't accidentally saved the run.sh file with CRLF line endings if you edit it. It needs to have the Linux LF style line ending.
- 
-Without these settings, the python application will not start correctly. If the app doesn't start, if you view the logs in AppServices LogStream, you may see the problem. The **SCM_DO_BUILD_DURING_DEPLOYMENT** setting is to make pip install run during deployment. See [docs](https://docs.microsoft.com/en-us/azure/app-service/configure-language-python#customize-build-automation).
 
 ## Troubleshooting
 
@@ -199,7 +193,7 @@ Content: {
 ```
 
 ### Understanding what's going on
-As a first source of information, the Python sample will trace output into the console window of all HTTP calls it receives. Then a good tip is to use Edge/Chrome/Firefox dev tools functionality found under F12 and watch the Network tab for traffic going from the browser to the Python app.
+As a first source of information, the Python sample will trace output into the console window of all HTTP calls it receives. Then a good tip is to use Edge/Chrome/Firefox dev tools functionality found under F12 and watch the Network tab for traffic going from the browser to the Node app.
 
 ## Best practices
 When deploying applications which need client credentials and use secrets or certificates the more secure practice is to use certificates. If you are hosting your application on azure make sure you check how to deploy managed identities. This takes away the management and risks of secrets in your application.
