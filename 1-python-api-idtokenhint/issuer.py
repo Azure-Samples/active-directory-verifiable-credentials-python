@@ -66,7 +66,7 @@ def issuanceRequest():
       "message": "Waiting for QR code to be scanned"
     }))
     accessToken = ""
-    result = msalCca.acquire_token_for_client( scopes="3db474b9-6a0c-4840-96ac-1fceb342124f/.default" )
+    result = msalCca.acquire_token_for_client( scopes=["3db474b9-6a0c-4840-96ac-1fceb342124f/.default"] )
     if "access_token" in result:
         print( result['access_token'] )
         accessToken = result['access_token']

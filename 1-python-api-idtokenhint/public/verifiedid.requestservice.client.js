@@ -66,7 +66,7 @@ function RequestService(onDrawQRCode, onNavigateToDeepLink, onRequestRetrieved, 
             if ((tmNow - 10) > _rsThis.request.expiry) {
                 clearInterval(pollFlag);
                 _rsThis.log(`${(tmNow - 10)} > ${_rsThis.request.expiry}`);
-                _rsThis.onError( { error: "timeout", error_description: `The ${_rsThis.requestType} request was not process in time.` });
+                _rsThis.onError( _rsThis.requestType, { error: "timeout", error_description: `The ${_rsThis.requestType} request was not process in time.` });
                 return;
             }
             const response = await fetch(`${_rsThis.apiPollPresentationRequest}?id=${id}`);
@@ -74,7 +74,7 @@ function RequestService(onDrawQRCode, onNavigateToDeepLink, onRequestRetrieved, 
             _rsThis.log(respMsg);
             if (respMsg.error_description) {
                 clearInterval(pollFlag);
-                _rsThis.onError(respMsg.error_description);
+                _rsThis.onError(_rsThis.requestType, respMsg.error_description);
             } else {
                 if (respMsg.status == 'request_retrieved') {
                     _rsThis.log(`onRequestRetrieved()`);
@@ -98,7 +98,7 @@ function RequestService(onDrawQRCode, onNavigateToDeepLink, onRequestRetrieved, 
                 if (respMsg.status == 'presentation_error' || respMsg.status == 'issuance_error') {
                     clearInterval(pollFlag);
                     _rsThis.log(`onError(...)`);
-                    _rsThis.onError(this.requestType, respMsg);
+                    _rsThis.onError(_rsThis.requestType, respMsg);
                 }
             }
         }, this.pollFrequency);

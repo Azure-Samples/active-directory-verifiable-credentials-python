@@ -110,7 +110,7 @@ if False == config["CredentialManifest"].startswith( config["msIdentityHostName"
     raise ValueError("Error in config file. CredentialManifest URL configured for wrong tenant region. Should start with: " + config["msIdentityHostName"])
     
 #  check that we a) can acquire an access_token and b) that it has the needed permission for this sample    
-result = msalCca.acquire_token_for_client( scopes="3db474b9-6a0c-4840-96ac-1fceb342124f/.default" )
+result = msalCca.acquire_token_for_client( scopes=["3db474b9-6a0c-4840-96ac-1fceb342124f/.default"] )
 if "access_token" in result:
     print( result['access_token'] )
     token = base64JwtTokenToJson( result["access_token"] )
