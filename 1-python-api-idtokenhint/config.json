@@ -1,11 +1,15 @@
 {
     "azTenantId": "<YOUR-AAD-TENANDID>",
-    "azClientId": "<YOUR-AAD-CLIENTID-FOR-KEYVAULT-ACCESS>",
-    "azClientSecret": "<YOUR-AAD-CLIENTSECRET-FOR-KEYVAULT-ACCESS>",
-    "azCertificateName" : "",
-    "azCertificateLocation": "",
-    "azCertificatePrivateKeyLocation": "",
+    "azClientId": "<YOUR-AAD-CLIENTID-FOR-API-ACCESS>",
+    "azClientSecret": "<YOUR-AAD-CLIENTSECRET-FOR-API-ACCESS>",
+    "azCertificateName":  "<YOUR-AAD-CERTNAME>",
+    "azCertThumbprint":  "<YOUR-AAD-CERTTHUMBPRINT>",
+    "azCertificatePrivateKeyLocation":  "<YOUR-AAD-CERTLOCATION>",
     "CredentialManifest": "<YOUR-MANIFEST-URL>",
-    "IssuerAuthority": "<YOUR-did:ion>",
-    "VerifierAuthority": "<VCs-did:ion>"
+    "DidAuthority": "<YOUR-did:ion>",
+    "acceptedIssuers": "did:web:...your-did...",
+    "CredentialType": "VerifiedCredentialExpert",
+    "issuancePinCodeLength": 4,
+    "sourcePhotoClaimName": "photo",
+    "matchConfidenceThreshold": 70
 }

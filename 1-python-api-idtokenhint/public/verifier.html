@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<!-- Copyright (c) Microsoft Corporation. All rights reserved.
+     Licensed under the MIT License. -->
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Verifiable Credentials Request API Sample - Verifier</title>
+        <meta name="description" content="Verified Credentials Expert">
+        <meta name="author" content="Microsoft">
+        <link rel="stylesheet" href="styles.css">
+        <link rel="icon" href="favicon.png">
+        
+    </head>    
+    <body>
+        <div id="wrap">
+            <div style="text-align: center;">
+                <img src="VerifiedCredentialExpert-icon.png" height=200px; />
+                <h1 id="idTitle">Verifiable Credential Presentation</h1>
+                <h2 id="idSubTitle"></h2>
+                <h3 id="idSub3Title"></h3>
+                
+                <div id="message-wrapper" class="margin-bottom-75 margin-top-75" style="display: none">
+                    <i class="fas fa-user-check green icon-text-large margin-bottom-25"></i>
+                    <div id="message"></div>
+                     <br />
+                 </div>
+                  
+                <button type="button" id="verify-credential" class="button">Verify Credential</button>
+                <button type="button" id="check-result" class="button" style="display:none">Check Result</button>
+                <input type="checkbox" id="useFaceCheck" name="useFaceCheck" value="0" style="display:none">
+                <label for="useFaceCheck" id="labelFaceCheck" style="display:none"> Use FaceCheck</label><br>
+                <div id="qrcode" style="text-align:center;display:none"></div>
+
+            <script src="qrcode.min.js"></script>
+            <script src="verifiedid.requestservice.client.js"></script>
+            <script src="verifiedid.uihandler.js"></script>
+    
+            <script>
+                var qrcode = new QRCode("qrcode", { width: 150, height: 150 });
+
+                document.getElementById('verify-credential').addEventListener('click', () => {
+                    if (true == document.getElementById('useFaceCheck').checked) {
+                        requestService.apiCreatePresentationRequest += '?faceCheck=1';
+                    }
+                    requestService.createPresentationRequest();
+                });
+    
+                document.getElementById('check-result').addEventListener('click', () => {
+                    requestService.pollRequestStatus(requestService.request.id);
+                });
+                
+                function setPresentationDetails(resp) {
+                    document.getElementById('idTitle').innerHTML = "Presentation of " + resp.type;
+                    document.getElementById('idSubTitle').innerHTML = "Accepted issuers: " + resp.acceptedIssuers;
+                    if ( resp.sourcePhotoClaimName ) {
+                        document.getElementById('useFaceCheck').style.display = "";
+                        document.getElementById('labelFaceCheck').style.display = "";
+                    }
+                }
+                function getPresentationDetails() {
+                    fetch('api/verifier/get-presentation-details')
+                    .then(function(response) {
+                        response.text()
+                        .catch(error => displayMessage(error) )
+                        .then(function(message) {
+                            var resp = JSON.parse(message);
+                            setPresentationDetails(resp);
+                        }).catch(error => { console.log(error.message); })
+                    }).catch(error => { console.log(error.message); })
+                }
+
+                window.onload = function() {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    var urlTemplate = urlParams.get('template');
+                    if ( urlTemplate ) {
+                        fetch(urlTemplate, {method: 'GET' })
+                            .then(function(response) {
+                                response.text()
+                                .then(function(message) {
+                                    fetch('api/verifier/load-template', {
+                                        headers: { 'Content-Type': 'application/json' },
+                                        method: 'POST',
+                                        body: message
+                                        }).then(getPresentationDetails());
+                                    });
+                            });
+                    } 
+                }
+                getPresentationDetails();
+            </script>
+
+        </div>
+    </body>
+</html>
